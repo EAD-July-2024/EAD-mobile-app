@@ -25,8 +25,10 @@ class ProductAdapter(private val context: Context, private val products: List<Pr
         holder.binding.productName.text = product.name
         holder.binding.productPrice.text = "$${product.price}"
 
-        // Load image with Glide
-        Glide.with(context).load(product.imageUrl).into(holder.binding.productImage)
+        // Load the first image from the imageUrls list
+        if (product.imageUrls.isNotEmpty()) {
+            Glide.with(context).load(product.imageUrls[0]).into(holder.binding.productImage)
+        }
 
         // Click listener to navigate to ProductDetailActivity
         holder.itemView.setOnClickListener {
