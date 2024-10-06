@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <!-- Rating stars -->
+    <TextView
+        android:id="@+id/ratingStars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stars: 5"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Rating comment -->
+    <TextView
+        android:id="@+id/ratingComment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="This is a comment about the vendor."
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/ratingStars"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Rating created date -->
+    <TextView
+        android:id="@+id/ratingDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Created on: 2024-10-06"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Rating modified date -->
+    <TextView
+        android:id="@+id/ratingModifiedDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Modified on: 2024-10-07"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/ratingDate"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Edit button for user’s own rating -->
+    <Button
+        android:id="@+id/editRatingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

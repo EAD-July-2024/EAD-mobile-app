@@ -10,7 +10,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 object HttpRepository {
-    private const val BASE_URL = "https://ecommerceapp.com/"
+    private const val BASE_URL = "https://ead-backend-725619571042.us-central1.run.app/api/"
     private val client = OkHttpClient()
 
     // GET Request
@@ -18,6 +18,30 @@ object HttpRepository {
         val request = Request.Builder()
             .url(BASE_URL + endpoint)
             .get()
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("HttpRepository", "GET request failed", e)
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    callback(response.body?.string())
+                } else {
+                    callback(null)
+                }
+            }
+        })
+    }
+
+    // GET Request with Bearer token
+    fun getRequestWithToken(endpoint: String, token: String, callback: (response: String?) -> Unit) {
+        val request = Request.Builder()
+            .url(BASE_URL + endpoint)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
@@ -61,6 +85,56 @@ object HttpRepository {
         })
     }
 
+    // POST Request with Bearer token
+    fun postRequestWithToken(endpoint: String, jsonBody: JSONObject, token: String, callback: (response: String?) -> Unit) {
+        val body = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(BASE_URL + endpoint)
+            .post(body)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("HttpRepository", "POST request failed", e)
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    callback(response.body?.string())
+                } else {
+                    callback(null)
+                }
+            }
+        })
+    }
+
+    // PATCH Request with Bearer token
+    fun patchRequestWithToken(endpoint: String, jsonBody: JSONObject, token: String, callback: (response: String?) -> Unit) {
+        val body = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(BASE_URL + endpoint)
+            .patch(body)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("HttpRepository", "PATCH request failed", e)
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    callback(response.body?.string())
+                } else {
+                    callback(null)
+                }
+            }
+        })
+    }
+
     // PATCH Request
     fun patchRequest(endpoint: String, jsonBody: JSONObject, callback: (response: String?) -> Unit) {
         val body =
@@ -73,6 +147,31 @@ object HttpRepository {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("HttpRepository", "PATCH request failed", e)
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    callback(response.body?.string())
+                } else {
+                    callback(null)
+                }
+            }
+        })
+    }
+
+    // PUT Request to update rating comment
+    fun putRequestWithToken(endpoint: String, jsonBody: JSONObject, token: String, callback: (response: String?) -> Unit) {
+        val body = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(BASE_URL + endpoint)
+            .put(body)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("HttpRepository", "PUT request failed", e)
                 callback(null)
             }
 

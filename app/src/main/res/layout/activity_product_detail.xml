@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/productImageDetail"
+    <!-- RecyclerView to display multiple images -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/productImagesRecyclerView"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:layout_margin="16dp"
@@ -14,16 +15,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Product Name -->
     <TextView
         android:id="@+id/productNameDetail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:textSize="24sp"
-        app:layout_constraintTop_toBottomOf="@id/productImageDetail"
+        app:layout_constraintTop_toBottomOf="@id/productImagesRecyclerView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Product Price -->
     <TextView
         android:id="@+id/productPriceDetail"
         android:layout_width="0dp"
@@ -33,12 +36,86 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Product Description -->
     <TextView
         android:id="@+id/productDescriptionDetail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/productPriceDetail"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/productPriceDetail" />
+
+    <!-- Vendor Name -->
+    <TextView
+        android:id="@+id/vendorName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Vendor Name"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productDescriptionDetail" />
+
+    <!-- Quantity Modifier Buttons and Text -->
+
+    <Button
+        android:id="@+id/removeQuantityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="48dp"
+        android:text="-"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productDescriptionDetail" />
+
+    <Button
+        android:id="@+id/addQuantityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:text="+"
+        app:layout_constraintStart_toEndOf="@id/quantityText"
+        app:layout_constraintTop_toBottomOf="@id/productDescriptionDetail" />
+
+    <!-- Add to Cart Button -->
+
+    <TextView
+        android:id="@+id/quantityText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:text="1"
+        app:layout_constraintStart_toEndOf="@id/removeQuantityButton"
+        app:layout_constraintTop_toBottomOf="@id/productDescriptionDetail" />
+
+    <Button
+        android:id="@+id/addToCartButton"
+        android:text="Add to Cart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/addQuantityButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <!-- Floating Action Button to Navigate to Cart -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/viewCartFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_cart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@android:color/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>
