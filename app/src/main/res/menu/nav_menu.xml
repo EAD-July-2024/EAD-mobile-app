@@ -4,6 +4,10 @@
         android:title="My Orders"
         android:icon="@drawable/ic_orders" />
     <item
+        android:id="@+id/nav_cart"
+        android:title="Cart"
+        android:icon="@drawable/ic_cart" />
+    <item
         android:id="@+id/nav_account"
         android:title="Account"
         android:icon="@drawable/ic_account" />

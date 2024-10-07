@@ -8,7 +8,7 @@ import com.ead.ecommerceapp.databinding.ItemCartBinding
 import com.ead.ecommerceapp.models.CartItem
 import com.ead.ecommerceapp.repositories.CartRepository
 
-class CartAdapter(private val context: Context, private val cartItems: MutableList<CartItem>) :
+class CartAdapter(private val context: Context, private val cartItems: MutableList<CartItem>, private val updateTotalPrice: () -> Unit) :
     RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
     private var onItemRemovedListener: ((List<CartItem>) -> Unit)? = null
@@ -35,6 +35,7 @@ class CartAdapter(private val context: Context, private val cartItems: MutableLi
             cartItem.quantity++
             holder.binding.quantityText.text = cartItem.quantity.toString()
             CartRepository.updateCart(cartItems, context)  // Update cart in DB
+            updateTotalPrice()  // Update total price instantly
         }
 
         // Remove quantity
@@ -43,16 +44,18 @@ class CartAdapter(private val context: Context, private val cartItems: MutableLi
                 cartItem.quantity--
                 holder.binding.quantityText.text = cartItem.quantity.toString()
                 CartRepository.updateCart(cartItems, context)  // Update cart in DB
+                updateTotalPrice()  // Update total price instantly
             }
         }
 
         // Remove item from cart
         holder.binding.removeItemButton.setOnClickListener {
-            cartItems.removeAt(position)  // Now works since cartItems is a MutableList
+            cartItems.removeAt(position)
             CartRepository.removeCartItem(cartItem, context)  // Remove from DB
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount)
             onItemRemovedListener?.invoke(cartItems)  // Notify listener
+            updateTotalPrice()  // Update total price after removing the item
         }
     }
 

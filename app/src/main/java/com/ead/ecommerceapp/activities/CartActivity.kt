@@ -25,12 +25,14 @@ class CartActivity : AppCompatActivity() {
 
         // Set up RecyclerView
         binding.cartRecyclerView.layoutManager = LinearLayoutManager(this)
-        cartAdapter = CartAdapter(this, CartRepository.getCartItems(this).toMutableList()) // Pass context to CartAdapter
+        cartAdapter = CartAdapter(this, CartRepository.getCartItems(this).toMutableList()) {
+            // This lambda updates the total price whenever quantity changes
+            updateTotalPrice()
+        }
         binding.cartRecyclerView.adapter = cartAdapter
 
-        // Handle total price calculation
-        val totalPrice = CartRepository.calculateTotalPrice(this) // Pass context here
-        binding.totalPriceText.text = "Total: $$totalPrice"
+        // Set initial total price
+        updateTotalPrice()
 
         // Checkout button action
         binding.checkoutButton.setOnClickListener {
@@ -45,8 +47,14 @@ class CartActivity : AppCompatActivity() {
 
         // Allow users to modify or remove items in the cart
         cartAdapter.setOnItemRemovedListener { updatedItems ->
-            CartRepository.updateCart(updatedItems, this)  // Pass context here
-            binding.totalPriceText.text = "Total: $${CartRepository.calculateTotalPrice(this)}" // Pass context here
+            CartRepository.updateCart(updatedItems, this)
+            updateTotalPrice()
         }
+    }
+
+    // Function to update the total price text
+    private fun updateTotalPrice() {
+        val totalPrice = CartRepository.calculateTotalPrice(this)
+        binding.totalPriceText.text = "Total: $$totalPrice"
     }
 }

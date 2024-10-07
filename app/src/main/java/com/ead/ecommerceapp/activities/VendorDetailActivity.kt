@@ -1,5 +1,6 @@
 package com.ead.ecommerceapp.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -34,15 +35,23 @@ class VendorDetailActivity : AppCompatActivity() {
         fetchVendorDetails()
 
         // Set up rating adapter
-        ratingAdapter = RatingAdapter(this, ratingList, currentUserId!!) { rating ->
-            showEditCommentDialog(rating)
+        ratingAdapter = RatingAdapter(this, ratingList, currentUserId ?: "") { rating ->
+            if (sessionManager.getToken() != null) {
+                showEditCommentDialog(rating)
+            } else {
+                promptLogin()
+            }
         }
         binding.recyclerViewRatings.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewRatings.adapter = ratingAdapter
 
         // Add rating button click
         binding.addRatingButton.setOnClickListener {
-            showRatingDialog()
+            if (sessionManager.getToken() != null) {
+                showRatingDialog()
+            } else {
+                promptLogin()
+            }
         }
     }
 
@@ -90,7 +99,12 @@ class VendorDetailActivity : AppCompatActivity() {
     // POST request to add a new rating
     private fun submitRating(stars: Int, comment: String) {
         val customerId = sessionManager.getUserId()
-        val token = sessionManager.getToken() ?: return
+        val token = sessionManager.getToken()
+
+        if (token == null) {
+            promptLogin() // Redirect to login if not logged in
+            return
+        }
 
         if (customerId != null && vendorId != null) {
             val jsonBody = JSONObject().apply {
@@ -138,7 +152,13 @@ class VendorDetailActivity : AppCompatActivity() {
 
     // PUT request to update the comment
     private fun updateComment(rating: Rating, newComment: String) {
-        val token = sessionManager.getToken() ?: return
+        val token = sessionManager.getToken()
+
+        if (token == null) {
+            promptLogin() // Redirect to login if not logged in
+            return
+        }
+
         val jsonBody = JSONObject().apply {
             put("customerId", sessionManager.getUserId())
             put("vendorId", vendorId)
@@ -158,4 +178,13 @@ class VendorDetailActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun promptLogin() {
+        Toast.makeText(this, "You need to log in to perform this action", Toast.LENGTH_SHORT).show()
+        // Redirect to Login Activity
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish() // Optionally, you can finish the current activity so the user cannot navigate back without logging in
+    }
+
 }

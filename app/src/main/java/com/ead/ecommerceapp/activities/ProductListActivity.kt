@@ -2,6 +2,7 @@ package com.ead.ecommerceapp.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -42,10 +43,14 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         setSupportActionBar(toolbar)
 
         // Set up the navigation drawer
-        toggle = ActionBarDrawerToggle(this, binding.drawerLayout, toolbar, R.string.open, R.string.close)
+        toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, toolbar, R.string.open, R.string.close
+        )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        // Set the icon to a three horizontal lines (hamburger icon)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)  // Set your custom icon here
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.navView.setNavigationItemSelectedListener(this)
 
@@ -81,12 +86,41 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate menu and update the navigation drawer dynamically
+        // menuInflater.inflate(R.menu.nav_menu, menu)
+        updateNavigationMenuItems()
+        return true
+    }
+
+    // Update menu items based on login state
+    private fun updateNavigationMenuItems() {
+        val menu = binding.navView.menu
+        val logoutItem = menu.findItem(R.id.nav_logout)
+        val logoutItem2 = menu.findItem(R.id.nav_orders)
+
+        // Show or hide logout based on login status
+        if (sessionManager.isLoggedIn()) {
+            logoutItem.isVisible = true
+        } else {
+            logoutItem.isVisible = false
+        }
+
+        // Show or hide order
+        if (sessionManager.isLoggedIn()) {
+            logoutItem2.isVisible = true
+        } else {
+            logoutItem2.isVisible = false
+        }
+    }
+
     // Function to set up the category RecyclerView
     private fun setupCategoryRecyclerView() {
         categoryAdapter = CategoryAdapter(this, categories) { selectedCategory ->
             filterProductsByCategory(selectedCategory)
         }
-        binding.recyclerViewCategories.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerViewCategories.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerViewCategories.adapter = categoryAdapter
     }
 
@@ -114,7 +148,14 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
                 startActivity(Intent(this, OrderListActivity::class.java))  // Navigate to order list
             }
             R.id.nav_account -> {
-                startActivity(Intent(this, AccountActivity::class.java))  // Navigate to account page
+                if (sessionManager.isLoggedIn()) {
+                    startActivity(Intent(this, AccountActivity::class.java))  // Navigate to account page
+                } else {
+                    startActivity(Intent(this, LoginActivity::class.java))  // Navigate to login page
+                }
+            }
+            R.id.nav_cart -> {
+                startActivity(Intent(this, CartActivity::class.java))  // Navigate to cart
             }
             R.id.nav_logout -> {
                 sessionManager.logout()
