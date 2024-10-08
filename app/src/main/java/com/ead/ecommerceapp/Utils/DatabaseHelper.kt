@@ -11,7 +11,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "cart_db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2  // Incremented version
 
         // Table and columns
         private const val TABLE_CART = "cart"
@@ -23,6 +23,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_CATEGORY_NAME = "categoryName"
         private const val COLUMN_VENDOR_ID = "vendorId"
         private const val COLUMN_VENDOR_NAME = "vendorName"
+        private const val COLUMN_IMAGE_URL = "image_url"  // New column for image URL
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -35,15 +36,18 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 $COLUMN_CATEGORY_ID TEXT,
                 $COLUMN_CATEGORY_NAME TEXT,
                 $COLUMN_VENDOR_ID TEXT,
-                $COLUMN_VENDOR_NAME TEXT
+                $COLUMN_VENDOR_NAME TEXT,
+                $COLUMN_IMAGE_URL TEXT  
             )
         """.trimIndent()
         db?.execSQL(createCartTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_CART")
-        onCreate(db)
+        if (oldVersion < 2) {
+            // Add the new column if upgrading from version 1 to 2
+            db?.execSQL("ALTER TABLE $TABLE_CART ADD COLUMN $COLUMN_IMAGE_URL TEXT")
+        }
     }
 
     // Insert cart item into the database
@@ -58,15 +62,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_CATEGORY_NAME, cartItem.categoryName)
             put(COLUMN_VENDOR_ID, cartItem.vendorId)
             put(COLUMN_VENDOR_NAME, cartItem.vendorName)
+            put(COLUMN_IMAGE_URL, cartItem.product.imageUrls.firstOrNull())  // Store the first image URL
         }
         db.insert(TABLE_CART, null, values)
     }
 
-    // Update existing cart item (if the quantity is changed)
+    // Update existing cart item (if the quantity or other fields are changed)
     fun updateCartItem(cartItem: CartItem) {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_QUANTITY, cartItem.quantity)  // Only update quantity
+            put(COLUMN_IMAGE_URL, cartItem.product.imageUrls.firstOrNull())  // Update image URL if needed
         }
         db.update(TABLE_CART, values, "$COLUMN_PRODUCT_ID = ?", arrayOf(cartItem.product.id))
     }
@@ -84,7 +90,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 description = "",  // Not storing description
                 price = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRICE)),
                 quantity = "",
-                imageUrls = emptyList(),  // Not storing images
+                imageUrls = listOf(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_URL))),  // Retrieve image URL
                 categoryName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_NAME)),
                 categoryId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID)),
                 vendorName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_NAME)),

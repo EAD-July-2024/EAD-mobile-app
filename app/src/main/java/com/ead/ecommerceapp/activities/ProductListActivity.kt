@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.SearchView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -50,9 +50,12 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         toggle.syncState()
 
         // Set the icon to a three horizontal lines (hamburger icon)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)  // Set your custom icon here
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_menu_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.navView.setNavigationItemSelectedListener(this)
+
+        // Dynamically update navigation drawer items based on login status
+        updateNavigationMenu()
 
         // Fetch products and set up RecyclerView
         ProductRepository.getProducts { products ->
@@ -72,9 +75,28 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
                 binding.recyclerViewProducts.adapter = productAdapter
             }
         }
+    }
 
-        // Search functionality
-        binding.productSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+    // Function to dynamically update the navigation menu
+    private fun updateNavigationMenu() {
+        val menu = binding.navView.menu
+        val isLoggedIn = sessionManager.isLoggedIn()
+
+        // Show or hide orders and logout menu items based on login status
+        menu.findItem(R.id.nav_orders).isVisible = isLoggedIn
+        menu.findItem(R.id.nav_logout).isVisible = isLoggedIn
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate menu with the search icon
+        menuInflater.inflate(R.menu.app_bar_menu, menu)
+
+        // Set up the SearchView
+        val searchItem = menu?.findItem(R.id.app_bar_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.queryHint = "Search Products"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -84,34 +106,16 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
                 return true
             }
         })
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate menu and update the navigation drawer dynamically
-        // menuInflater.inflate(R.menu.nav_menu, menu)
-        updateNavigationMenuItems()
+        // Reset filters when search is closed
+        searchView.setOnCloseListener {
+            searchView.onActionViewCollapsed()  // Collapse the SearchView
+            productAdapter = ProductAdapter(this, productList)
+            binding.recyclerViewProducts.adapter = productAdapter
+            true
+        }
+
         return true
-    }
-
-    // Update menu items based on login state
-    private fun updateNavigationMenuItems() {
-        val menu = binding.navView.menu
-        val logoutItem = menu.findItem(R.id.nav_logout)
-        val logoutItem2 = menu.findItem(R.id.nav_orders)
-
-        // Show or hide logout based on login status
-        if (sessionManager.isLoggedIn()) {
-            logoutItem.isVisible = true
-        } else {
-            logoutItem.isVisible = false
-        }
-
-        // Show or hide order
-        if (sessionManager.isLoggedIn()) {
-            logoutItem2.isVisible = true
-        } else {
-            logoutItem2.isVisible = false
-        }
     }
 
     // Function to set up the category RecyclerView

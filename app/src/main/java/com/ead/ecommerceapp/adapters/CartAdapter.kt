@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.ead.ecommerceapp.databinding.ItemCartBinding
 import com.ead.ecommerceapp.models.CartItem
 import com.ead.ecommerceapp.repositories.CartRepository
@@ -29,6 +30,14 @@ class CartAdapter(private val context: Context, private val cartItems: MutableLi
         holder.binding.productName.text = cartItem.product.name
         holder.binding.productPrice.text = "$${cartItem.product.price}"
         holder.binding.quantityText.text = cartItem.quantity.toString()
+
+        // Load product image using Glide
+        val imageUrl = cartItem.product.imageUrls.firstOrNull()  // Get the first image URL if available
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(context)
+                .load(imageUrl)
+                .into(holder.binding.productImage)  // Load image into ImageView
+        }
 
         // Add quantity
         holder.binding.addQuantityButton.setOnClickListener {
