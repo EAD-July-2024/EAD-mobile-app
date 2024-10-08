@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ead.ecommerceapp.R
 import com.ead.ecommerceapp.databinding.ItemRatingBinding
 import com.ead.ecommerceapp.models.Rating
 
@@ -26,26 +25,30 @@ class RatingAdapter(
 
     override fun onBindViewHolder(holder: RatingViewHolder, position: Int) {
         val rating = ratings[position]
-        holder.binding.ratingStars.text = "Stars: ${rating.stars}"
+
+        // Set the star rating using RatingBar
+        holder.binding.ratingBar.rating = rating.stars.toFloat()  // Set the rating value on RatingBar
+
+        // Set the comment and created date
         holder.binding.ratingComment.text = rating.comment
         holder.binding.ratingDate.text = "Created on: ${rating.dateCreated}"
 
-        // Show "Edit" option only for the logged-in user's comment
-        if (rating.customerId == currentUserId) {
-            holder.binding.editRatingButton.visibility = View.VISIBLE
-            holder.binding.editRatingButton.setOnClickListener {
-                onEditClick(rating) // Trigger callback when edit button is clicked
-            }
-        } else {
-            holder.binding.editRatingButton.visibility = View.GONE
-        }
-
-        // If rating was modified, show the modified date
+        // If the rating was modified, show the modified date
         if (rating.isModified) {
             holder.binding.ratingModifiedDate.visibility = View.VISIBLE
             holder.binding.ratingModifiedDate.text = "Modified on: ${rating.dateModified}"
         } else {
             holder.binding.ratingModifiedDate.visibility = View.GONE
+        }
+
+        // Show "Edit" button for the logged-in user's ratings
+        if (rating.customerId == currentUserId) {
+            holder.binding.editRatingButton.visibility = View.VISIBLE
+            holder.binding.editRatingButton.setOnClickListener {
+                onEditClick(rating) // Trigger the callback for editing
+            }
+        } else {
+            holder.binding.editRatingButton.visibility = View.GONE
         }
     }
 

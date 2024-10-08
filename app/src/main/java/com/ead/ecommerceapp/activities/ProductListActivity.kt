@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -19,6 +20,11 @@ import com.ead.ecommerceapp.models.Product
 import com.ead.ecommerceapp.repositories.ProductRepository
 import com.ead.ecommerceapp.utils.SessionManager
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.slider.RangeSlider
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import android.widget.Toast
 
 class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -30,6 +36,9 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
     private lateinit var sessionManager: SessionManager
     private lateinit var toggle: ActionBarDrawerToggle
     private var categories: MutableList<String> = mutableListOf("All")  // Start with "All" category
+    private var selectedVendor: String? = null
+    private var minPrice: Int = 0
+    private var maxPrice: Int = Int.MAX_VALUE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,18 +86,8 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         }
     }
 
-    // Function to dynamically update the navigation menu
-    private fun updateNavigationMenu() {
-        val menu = binding.navView.menu
-        val isLoggedIn = sessionManager.isLoggedIn()
-
-        // Show or hide orders and logout menu items based on login status
-        menu.findItem(R.id.nav_orders).isVisible = isLoggedIn
-        menu.findItem(R.id.nav_logout).isVisible = isLoggedIn
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate menu with the search icon
+        // Inflate menu with the search icon and filter icon
         menuInflater.inflate(R.menu.app_bar_menu, menu)
 
         // Set up the SearchView
@@ -118,32 +117,105 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         return true
     }
 
-    // Function to set up the category RecyclerView
-    private fun setupCategoryRecyclerView() {
-        categoryAdapter = CategoryAdapter(this, categories) { selectedCategory ->
-            filterProductsByCategory(selectedCategory)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.app_bar_filter -> {
+                showFilterDialog()  // Show filter dialog when the filter button is clicked
+            }
         }
-        binding.recyclerViewCategories.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.recyclerViewCategories.adapter = categoryAdapter
+        return super.onOptionsItemSelected(item)
     }
 
-    // Function to filter products by selected category
-    private fun filterProductsByCategory(category: String) {
-        filteredProductList = if (category == "All") {
-            productList
-        } else {
-            productList.filter { it.categoryName == category }
+    // Show filter options for vendor and price range using a RangeSlider for price selection
+    private fun showFilterDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("Filter Options")
+
+        val layout = LinearLayout(this)
+        layout.orientation = LinearLayout.VERTICAL
+
+        // Vendor selection
+        val vendorText = TextView(this)
+        vendorText.text = "Select Vendor"
+        layout.addView(vendorText)
+
+        val vendorList = productList.map { it.vendorName }.distinct().sorted()
+        val scrollView = ScrollView(this)
+        val vendorLayout = LinearLayout(this)
+        vendorLayout.orientation = LinearLayout.VERTICAL
+
+        for (vendor in vendorList) {
+            val vendorOption = TextView(this)
+            vendorOption.text = vendor
+            vendorOption.setPadding(16, 16, 16, 16)
+            vendorOption.setOnClickListener {
+                selectedVendor = vendor
+                Toast.makeText(this, "Selected Vendor: $vendor", Toast.LENGTH_SHORT).show()
+            }
+            vendorLayout.addView(vendorOption)
+        }
+
+        scrollView.addView(vendorLayout)
+        layout.addView(scrollView)
+
+        // Price Range selection using RangeSlider
+        val priceText = TextView(this)
+        priceText.text = "Select Price Range"
+        layout.addView(priceText)
+
+        val rangeSlider = RangeSlider(this)
+        rangeSlider.valueFrom = 0f
+        rangeSlider.valueTo = 10000f  // Set this according to the possible price range in your data
+        rangeSlider.values = listOf(0f, 10000f)  // Default range
+        rangeSlider.stepSize = 100f  // Optional, to set increments
+
+        rangeSlider.addOnChangeListener { slider, _, _ ->
+            // Show selected min and max price on change
+            minPrice = slider.values[0].toInt()
+            maxPrice = slider.values[1].toInt()
+        }
+
+        layout.addView(rangeSlider)
+
+        dialogBuilder.setView(layout)
+
+        dialogBuilder.setPositiveButton("Apply") { _, _ ->
+            filterProductsByVendorAndPrice()
+        }
+
+        dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        dialogBuilder.show()
+    }
+
+    // Function to filter products by vendor and price range
+    private fun filterProductsByVendorAndPrice() {
+        filteredProductList = productList.filter { product ->
+            val isWithinPriceRange = product.price.toInt() in minPrice..maxPrice
+            val isVendorMatched = selectedVendor?.let { product.vendorName == it } ?: true
+            isWithinPriceRange && isVendorMatched
         }
         productAdapter = ProductAdapter(this, filteredProductList)
         binding.recyclerViewProducts.adapter = productAdapter
     }
 
-    // Function to filter products based on search query
+    // Function to filter products by search query
     private fun filterProductsBySearch(query: String) {
         val searchedList = filteredProductList.filter { it.name.contains(query, ignoreCase = true) }
         productAdapter = ProductAdapter(this, searchedList)
         binding.recyclerViewProducts.adapter = productAdapter
+    }
+
+    // Function to dynamically update the navigation menu
+    private fun updateNavigationMenu() {
+        val menu = binding.navView.menu
+        val isLoggedIn = sessionManager.isLoggedIn()
+
+        // Show or hide orders and logout menu items based on login status
+        menu.findItem(R.id.nav_orders).isVisible = isLoggedIn
+        menu.findItem(R.id.nav_logout).isVisible = isLoggedIn
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -169,5 +241,26 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    // Function to set up the category RecyclerView
+    private fun setupCategoryRecyclerView() {
+        categoryAdapter = CategoryAdapter(this, categories) { selectedCategory ->
+            filterProductsByCategory(selectedCategory)
+        }
+        binding.recyclerViewCategories.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerViewCategories.adapter = categoryAdapter
+    }
+
+    // Function to filter products by selected category
+    private fun filterProductsByCategory(category: String) {
+        filteredProductList = if (category == "All") {
+            productList
+        } else {
+            productList.filter { it.categoryName == category }
+        }
+        productAdapter = ProductAdapter(this, filteredProductList)
+        binding.recyclerViewProducts.adapter = productAdapter
     }
 }

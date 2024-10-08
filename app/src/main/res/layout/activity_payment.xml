@@ -5,50 +5,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Card Number Input -->
-    <EditText
-        android:id="@+id/cardNumberEditText"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Card Number"
-        android:inputType="number"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <!-- Card Number Input -->
+        <EditText
+            android:id="@+id/cardNumberEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginTop="176dp"
+            android:hint="Card Number"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Expiry Date Input -->
-    <EditText
-        android:id="@+id/expiryDateEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Expiry Date (MM/YY)"
-        android:inputType="date"
-        app:layout_constraintTop_toBottomOf="@id/cardNumberEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        <!-- Expiry Date Input -->
+        <EditText
+            android:id="@+id/expiryDateEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Expiry Date (MM/YY)"
+            android:inputType="date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardNumberEditText" />
 
-    <!-- CVV Input -->
-    <EditText
-        android:id="@+id/cvvEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="CVV"
-        android:inputType="numberPassword"
-        app:layout_constraintTop_toBottomOf="@id/expiryDateEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        <!-- CVV Input -->
+        <EditText
+            android:id="@+id/cvvEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="CVV"
+            android:inputType="numberPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/expiryDateEditText" />
 
-    <!-- Pay Now Button -->
-    <Button
-        android:id="@+id/payNowButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pay Now"
-        app:layout_constraintTop_toBottomOf="@id/cvvEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        <!-- Pay Now Button -->
+        <Button
+            android:id="@+id/payNowButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="#0457f1"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:text="Pay Now"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cvvEditText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

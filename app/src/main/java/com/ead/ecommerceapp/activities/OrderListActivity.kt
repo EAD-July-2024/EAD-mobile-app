@@ -57,10 +57,12 @@ class OrderListActivity : AppCompatActivity() {
                             price = jsonOrderItem.getDouble("price"),
                             status = jsonOrderItem.getString("status"),
                             createdDate = jsonOrderItem.getString("createdDate"),
-                            updatedDate = jsonOrderItem.getString("updatedDate")
+                            updatedDate = jsonOrderItem.getString("updatedDate"),
+                            imageUrl = jsonOrderItem.getString("imageUrl")  // Extract image URL
                         )
                         orderItems.add(orderItem)
                     }
+
 
                     // Create Order object with orderItems
                     val order = Order(

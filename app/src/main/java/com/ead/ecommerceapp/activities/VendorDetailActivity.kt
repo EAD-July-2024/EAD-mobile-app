@@ -63,7 +63,11 @@ class VendorDetailActivity : AppCompatActivity() {
                     runOnUiThread {
                         binding.vendorNameDetail.text = vendorJson.getString("fullName")
                         binding.vendorContactDetail.text = vendorJson.getString("contactInfo")
-                        binding.vendorRatingDetail.text = vendorJson.getString("averageRating")
+
+                        // Set the average rating to the RatingBar
+                        val averageRating = vendorJson.getDouble("averageRating")
+                        binding.vendorRatingBar.rating = averageRating.toFloat()
+
                         val ratings = vendorJson.getJSONArray("ratings")
                         ratingList = Rating.fromJsonArray(ratings)
                         ratingAdapter.updateRatings(ratingList)
@@ -84,7 +88,7 @@ class VendorDetailActivity : AppCompatActivity() {
         builder.setView(dialogBinding.root)
             .setTitle("Add Rating")
             .setPositiveButton("Submit") { _, _ ->
-                val stars = dialogBinding.ratingBar.rating.toInt()
+                val stars = dialogBinding.ratingBar.rating.toDouble()
                 val comment = dialogBinding.commentText.text.toString()
                 if (stars > 0 && comment.isNotEmpty()) {
                     submitRating(stars, comment)
@@ -97,7 +101,7 @@ class VendorDetailActivity : AppCompatActivity() {
     }
 
     // POST request to add a new rating
-    private fun submitRating(stars: Int, comment: String) {
+    private fun submitRating(stars: Double, comment: String) {
         val customerId = sessionManager.getUserId()
         val token = sessionManager.getToken()
 

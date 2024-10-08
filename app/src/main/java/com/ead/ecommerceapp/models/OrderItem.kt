@@ -11,5 +11,6 @@ data class OrderItem(
     val price: Double,
     val status: String,
     val createdDate: String,
-    val updatedDate: String
-) : Serializable // Ensure it implements Serializable
+    val updatedDate: String,
+    val imageUrl: String  // New field for the product image URL
+) : Serializable

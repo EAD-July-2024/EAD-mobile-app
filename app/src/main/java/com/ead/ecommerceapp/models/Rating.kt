@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 @Parcelize
 data class Rating(
-    val stars: Int,
+    val stars: Double,
     val comment: String,
     val dateCreated: String,
     val customerId: String,
@@ -23,7 +23,7 @@ data class Rating(
                 val jsonRating: JSONObject = jsonArray.getJSONObject(i)
                 ratings.add(
                     Rating(
-                        stars = jsonRating.getInt("stars"),
+                        stars = jsonRating.getDouble("stars"),
                         comment = jsonRating.getString("comment"),
                         dateCreated = jsonRating.getString("dateCreated"),
                         customerId = jsonRating.getString("customerId"),
