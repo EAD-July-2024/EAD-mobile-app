@@ -23,6 +23,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_CATEGORY_NAME = "categoryName"
         private const val COLUMN_VENDOR_ID = "vendorId"
         private const val COLUMN_VENDOR_NAME = "vendorName"
+        private const val COLUMN_VENDOR_RATING = "vendorRating"
         private const val COLUMN_IMAGE_URL = "image_url"  // New column for image URL
     }
 
@@ -37,6 +38,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 $COLUMN_CATEGORY_NAME TEXT,
                 $COLUMN_VENDOR_ID TEXT,
                 $COLUMN_VENDOR_NAME TEXT,
+                $COLUMN_VENDOR_RATING TEXT,
                 $COLUMN_IMAGE_URL TEXT  
             )
         """.trimIndent()
@@ -62,6 +64,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_CATEGORY_NAME, cartItem.categoryName)
             put(COLUMN_VENDOR_ID, cartItem.vendorId)
             put(COLUMN_VENDOR_NAME, cartItem.vendorName)
+            put(COLUMN_VENDOR_RATING, cartItem.vendorRating)
             put(COLUMN_IMAGE_URL, cartItem.product.imageUrls.firstOrNull())  // Store the first image URL
         }
         db.insert(TABLE_CART, null, values)
@@ -95,13 +98,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 categoryId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID)),
                 vendorName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_NAME)),
                 vendorId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_ID)),
+                rating = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_RATING))
             )
             val quantity = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUANTITY))
             val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_NAME))
             val categoryId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID))
             val vendorName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_NAME))
             val vendorId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_ID))
-            cartItems.add(CartItem(product, quantity, categoryId, categoryName, vendorId, vendorName))
+            val vendorRating = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_VENDOR_RATING))
+            cartItems.add(CartItem(product, quantity, categoryId, categoryName, vendorId, vendorName, vendorRating))
         }
 
         cursor.close()

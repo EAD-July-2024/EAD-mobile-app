@@ -32,7 +32,8 @@ object ProductRepository {
                             categoryId = jsonProduct.getString("categoryId"),
                             vendorName = jsonProduct.getString("vendorName"),
                             vendorId = jsonProduct.getString("vendorId"),
-                            quantity = jsonProduct.getString("quantity")
+                            quantity = jsonProduct.getString("quantity"),
+                            rating = jsonProduct.getDouble("vendorRating")
                         )
                     )
                 }

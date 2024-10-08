@@ -28,7 +28,7 @@ class CartAdapter(private val context: Context, private val cartItems: MutableLi
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
         val cartItem = cartItems[position]
         holder.binding.productName.text = cartItem.product.name
-        holder.binding.productPrice.text = "$${cartItem.product.price}"
+        holder.binding.productPrice.text = "Rs.${cartItem.product.price}.00"
         holder.binding.quantityText.text = cartItem.quantity.toString()
 
         // Load product image using Glide

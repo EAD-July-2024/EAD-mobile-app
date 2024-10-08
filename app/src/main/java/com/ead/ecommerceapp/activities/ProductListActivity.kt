@@ -22,9 +22,11 @@ import com.ead.ecommerceapp.utils.SessionManager
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.RangeSlider
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.setPadding
 
 class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -39,6 +41,7 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
     private var selectedVendor: String? = null
     private var minPrice: Int = 0
     private var maxPrice: Int = Int.MAX_VALUE
+    private var selectedRating: Int? = null  // Store the selected star rating
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,7 +129,7 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         return super.onOptionsItemSelected(item)
     }
 
-    // Show filter options for vendor and price range using a RangeSlider for price selection
+    // Show filter options for vendor, price range, and rating
     private fun showFilterDialog() {
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setTitle("Filter Options")
@@ -136,6 +139,7 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
         // Vendor selection
         val vendorText = TextView(this)
+        vendorText.setPadding(16, 16, 16, 16)
         vendorText.text = "Select Vendor"
         layout.addView(vendorText)
 
@@ -147,7 +151,7 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         for (vendor in vendorList) {
             val vendorOption = TextView(this)
             vendorOption.text = vendor
-            vendorOption.setPadding(16, 16, 16, 16)
+            vendorOption.setPadding(32, 16, 16, 16)
             vendorOption.setOnClickListener {
                 selectedVendor = vendor
                 Toast.makeText(this, "Selected Vendor: $vendor", Toast.LENGTH_SHORT).show()
@@ -160,27 +164,51 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
 
         // Price Range selection using RangeSlider
         val priceText = TextView(this)
+        priceText.setPadding(16, 16, 16, 16)
         priceText.text = "Select Price Range"
         layout.addView(priceText)
 
         val rangeSlider = RangeSlider(this)
         rangeSlider.valueFrom = 0f
-        rangeSlider.valueTo = 10000f  // Set this according to the possible price range in your data
-        rangeSlider.values = listOf(0f, 10000f)  // Default range
-        rangeSlider.stepSize = 100f  // Optional, to set increments
+        rangeSlider.valueTo = 10000f
+        rangeSlider.values = listOf(0f, 10000f)
+        rangeSlider.stepSize = 100f
 
         rangeSlider.addOnChangeListener { slider, _, _ ->
-            // Show selected min and max price on change
             minPrice = slider.values[0].toInt()
             maxPrice = slider.values[1].toInt()
         }
 
         layout.addView(rangeSlider)
 
+        // Rating selection using RatingBar
+        val ratingText = TextView(this)
+        ratingText.setPadding(16, 16, 16, 16)
+        ratingText.text = "Select Minimum Rating"
+        layout.addView(ratingText)
+
+        val ratingBar = RatingBar(this)
+        ratingBar.setPadding(10, 16, 0, 16)
+        ratingBar.numStars = 5
+        ratingBar.stepSize = 1.0f  // Allows selecting whole stars
+        ratingBar.rating = 0f  // Default to 0 stars
+        ratingBar.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        layout.addView(ratingBar)
+
+        // Listen for rating change
+        ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
+            selectedRating = rating.toInt()
+            Toast.makeText(this, "Selected Rating: $selectedRating Stars", Toast.LENGTH_SHORT).show()
+        }
+
         dialogBuilder.setView(layout)
 
         dialogBuilder.setPositiveButton("Apply") { _, _ ->
-            filterProductsByVendorAndPrice()
+            filterProductsByVendorPriceAndRating()
         }
 
         dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
@@ -263,4 +291,17 @@ class ProductListActivity : AppCompatActivity(), NavigationView.OnNavigationItem
         productAdapter = ProductAdapter(this, filteredProductList)
         binding.recyclerViewProducts.adapter = productAdapter
     }
+
+    // Function to filter products by vendor, price, and rating
+    private fun filterProductsByVendorPriceAndRating() {
+        filteredProductList = productList.filter { product ->
+            val isWithinPriceRange = product.price.toInt() in minPrice..maxPrice
+            val isVendorMatched = selectedVendor?.let { product.vendorName == it } ?: true
+            val isRatingMatched = product.rating in (selectedRating?.toDouble() ?: 0.0)..(selectedRating?.toDouble()?: 4.1 + 0.9)
+            isWithinPriceRange && isVendorMatched && isRatingMatched
+        }
+        productAdapter = ProductAdapter(this, filteredProductList)
+        binding.recyclerViewProducts.adapter = productAdapter
+    }
+
 }

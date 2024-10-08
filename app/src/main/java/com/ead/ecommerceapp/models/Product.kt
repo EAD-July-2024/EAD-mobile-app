@@ -14,5 +14,6 @@ data class Product(
     val imageUrls: List<String>,  // List of image URLs
     val quantity: String,
     val vendorId: String,
-    val vendorName: String
+    val vendorName: String,
+    val rating: Double
 ) : Parcelable

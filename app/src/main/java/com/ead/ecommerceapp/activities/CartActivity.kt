@@ -55,6 +55,6 @@ class CartActivity : AppCompatActivity() {
     // Function to update the total price text
     private fun updateTotalPrice() {
         val totalPrice = CartRepository.calculateTotalPrice(this)
-        binding.totalPriceText.text = "Total: $$totalPrice"
+        binding.totalPriceText.text = "Total: Rs.$totalPrice"+"0"
     }
 }

@@ -20,7 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="Order ID"
-            android:textSize="18sp"
+            android:textColor="#0457F1"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

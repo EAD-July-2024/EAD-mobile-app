@@ -18,8 +18,10 @@ class AccountActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
 
         // Display account details
-        binding.nameText.text = sessionManager.getToken() // Replace with actual user name
-        binding.emailText.text = sessionManager.getToken() // Replace with actual email
+//        binding.nameText.text = sessionManager.getToken() // Replace with actual user name
+//        binding.emailText.text = sessionManager.getToken() // Replace with actual email
+        binding.nameText.text = "Name - Amal" // Replace with actual user name
+        binding.emailText.text = "Email  - amal@gmail.com" // Replace with actual email
 
         binding.logoutButton.setOnClickListener {
             sessionManager.logout()

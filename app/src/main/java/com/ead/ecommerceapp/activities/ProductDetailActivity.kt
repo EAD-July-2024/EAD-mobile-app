@@ -33,9 +33,9 @@ class ProductDetailActivity : AppCompatActivity() {
         product?.let {
             binding.productNameDetail.text = it.name
             binding.productDescriptionDetail.text = it.description
-            binding.productPriceDetail.text = "$${it.price}"
+            binding.productPriceDetail.text = "Rs.${it.price}.00"
             binding.quantityText.text = currentQuantity.toString()
-            binding.vendorName.text = it.vendorName
+            binding.vendorName.text = "Vendor - "+it.vendorName
 
             // Set up RecyclerView for images
             binding.productImagesRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -58,7 +58,7 @@ class ProductDetailActivity : AppCompatActivity() {
 
             // Add product to cart
             binding.addToCartButton.setOnClickListener {
-                val cartItem = CartItem(product, currentQuantity, "", "", "", "")  // Use `product`
+                val cartItem = CartItem(product, currentQuantity, "", "", "", "", 0.0)  // Use `product`
                 CartRepository.addToCart(cartItem, this)
                 Snackbar.make(binding.root, "${product.name} added to cart", Snackbar.LENGTH_LONG).show()
             }

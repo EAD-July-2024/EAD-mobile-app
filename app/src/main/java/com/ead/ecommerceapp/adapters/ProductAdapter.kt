@@ -23,7 +23,7 @@ class ProductAdapter(private val context: Context, private val products: List<Pr
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
         holder.binding.productName.text = product.name
-        holder.binding.productPrice.text = "Rs.${product.price}"
+        holder.binding.productPrice.text = "Rs.${product.price}.00"
 
         // Load the first image from the imageUrls list
         if (product.imageUrls.isNotEmpty()) {

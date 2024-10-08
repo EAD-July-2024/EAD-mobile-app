@@ -23,7 +23,7 @@ class OrderAdapter(
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val order = orders[position]
         holder.binding.orderIdText.text = "Order ID: ${order.orderId}"
-        holder.binding.orderTotalPriceText.text = "Total: $${order.totalPrice}"
+        holder.binding.orderTotalPriceText.text = "Total: Rs.${order.totalPrice}0"
         holder.binding.orderStatusText.text = "Status: ${order.status}"
 
         holder.itemView.setOnClickListener {

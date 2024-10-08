@@ -2,6 +2,7 @@ package com.ead.ecommerceapp.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.ead.ecommerceapp.databinding.ActivityPaymentBinding
@@ -61,6 +62,8 @@ class PaymentActivity : AppCompatActivity() {
             put("customerId", customerId)
             put("productList", productList)
         }
+
+        Log.e("OrderListActivity", jsonBody.toString())
 
         HttpRepository.postRequestWithToken("order", jsonBody, token) { response ->
             runOnUiThread {
